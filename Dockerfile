@@ -21,6 +21,7 @@ RUN \
   sed -i 's,sys/fcntl.h,fcntl.h,' sd-daemon.c && \
   make && \
   mv beanstalkd /usr/bin/ && \
+  mkdir /var/cache/beanstalkd && \
   apk del --purge \
     build-base \
     bash \
@@ -31,6 +32,6 @@ RUN \
     /tmp/* \
     /var/cache/apk/
 
-ENTRYPOINT [ '/usr/bin/beanstalkd' ]
+CMD ["/usr/bin/beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0"]
 
 # EOF

@@ -15,9 +15,10 @@ run:
 		--detach \
 		--interactive \
 		--tty \
+		--publish=11300:11300 \
 		--hostname=${CONTAINER} \
 		--name=${CONTAINER} \
-		$(IMAGE_NAME)
+		${IMAGE_NAME}
 
 shell:
 	docker \
@@ -27,15 +28,20 @@ shell:
 		--tty \
 		--hostname=${CONTAINER} \
 		--name=${CONTAINER} \
-		$(IMAGE_NAME) \
-		/bin/bash
+		${IMAGE_NAME} \
+		/bin/sh
 
 exec:
-	docker exec \
+	docker \
+		exec \
 		--interactive \
 		--tty \
-		${CONTAINER} \
-		/bin/bash
+		${CONTAINER}
+
+remove:
+	docker \
+		rm \
+		${CONTAINER}
 
 stop:
 	docker \
