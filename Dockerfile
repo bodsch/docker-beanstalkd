@@ -23,14 +23,14 @@ RUN \
   mv beanstalkd /usr/bin/ && \
   apk del --purge \
     build-base \
+    bash \
+    ca-certificates \
     git && \
   rm -rf \
     /opt/* \
     /tmp/* \
     /var/cache/apk/
 
-COPY rootfs/ /
-
-CMD '/bin/sh'
+ENTRYPOINT [ '/usr/bin/beanstalkd' ]
 
 # EOF
