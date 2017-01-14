@@ -4,9 +4,9 @@ services:
   - docker
 
 install:
-  - docker build --tag bodsch/docker-carbon-c-relay .
-  - docker run --detach --name grafana bodsch/docker-carbon-c-relay
+  - docker build --tag bodsch/docker-beanstalkd .
+  - docker run --detach --name grafana bodsch/docker-beanstalkd
 
 script:
-  - docker ps | grep -q carbon-c-relay
+  - docker ps | grep -q beanstalkd
 
