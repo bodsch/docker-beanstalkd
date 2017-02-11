@@ -7,30 +7,26 @@ Beanstalk is a simple, fast work queue. [Project at GitHub](http://kr.github.io/
 
 # Status
 
-[![Build Status](https://travis-ci.org/bodsch/docker-beanstalkd.svg?branch=master)](https://travis-ci.org/bodsch/docker-beanstalkd)
+[![Build Status](https://travis-ci.org/bodsch/docker-beanstalkd.svg?branch=1702-02)](https://travis-ci.org/bodsch/docker-beanstalkd)
 
 
 # Build
 
 Your can use the included Makefile.
 
-To build the Container:
-    make build
+To build the Container: ```make build```
 
-Starts the Container:
-    make run
+To remove the builded Docker Image: ```make clean```
 
-Starts the Container with Login Shell:
-    make shell
+Starts the Container: ```make run```
 
-Entering the Container:
-    make exec
+Starts the Container with Login Shell: ```make shell```
 
-Stop (but **not kill**):
-    make stop
+Entering the Container: ```make exec```
 
-History
-    make history
+Stop (but **not kill**): ```make stop```
+
+History ```make history```
 
 
 # Docker Hub
