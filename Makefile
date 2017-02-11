@@ -9,6 +9,11 @@ build:
 		--rm --tag=$(IMAGE_NAME) .
 	@echo Image tag: ${IMAGE_NAME}
 
+clean:
+	docker \
+		rmi \
+		${IMAGE_NAME}
+
 run:
 	docker \
 		run \
