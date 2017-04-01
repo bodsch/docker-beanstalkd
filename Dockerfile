@@ -17,13 +17,12 @@ EXPOSE 11300
 RUN \
   echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/main"       > /etc/apk/repositories && \
   echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/community" >> /etc/apk/repositories && \
-  apk --no-cache update && \
-  apk --no-cache upgrade && \
-  apk --no-cache add \
+  apk --quiet --no-cache update && \
+  apk --quiet --no-cache upgrade && \
+  apk --quiet --no-cache add \
     build-base \
     git && \
   [ -d /opt ] || mkdir /opt &&\
-  [ -d /srv ] || mkdir /srv && \
   cd /opt && \
   git clone https://github.com/kr/beanstalkd.git && \
   cd beanstalkd && \
@@ -31,10 +30,8 @@ RUN \
   make && \
   mv beanstalkd /usr/bin/ && \
   mkdir /var/cache/beanstalkd && \
-  apk del --purge \
+  apk del --purge --quiet \
     build-base \
-    bash \
-    ca-certificates \
     git && \
   rm -rf \
     /opt/* \
