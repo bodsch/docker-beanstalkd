@@ -3,13 +3,13 @@ FROM alpine:latest
 
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
-LABEL version="1704-02"
+LABEL version="1705-01"
 
 ENV \
   ALPINE_MIRROR="dl-cdn.alpinelinux.org" \
   ALPINE_VERSION="edge" \
   TERM=xterm \
-  BUILD_DATE="2017-04-17" \
+  BUILD_DATE="2017-05-01" \
   BEANSTALKD_VERSION="1.10+21+gb7b4a6a+mod" \
   APK_ADD="build-base git" \
   APK_DEL="build-base git"
