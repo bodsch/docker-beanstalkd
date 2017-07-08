@@ -1,58 +1,82 @@
 
-CONTAINER  := beanstalkd
-IMAGE_NAME := docker-beanstalkd
+include env_make
+
+NS       = bodsch
+VERSION ?= latest
+
+REPO     = docker-beanstalkd
+NAME     = beanstalkd
+INSTANCE = default
+
+.PHONY: build push shell run start stop rm release
 
 
 build:
-	docker \
-		build \
-		--rm --tag=$(IMAGE_NAME) .
-	@echo Image tag: ${IMAGE_NAME}
+	docker build \
+		--rm \
+		--tag $(NS)/$(REPO):$(VERSION) .
 
 clean:
-	docker \
-		rmi \
-		${IMAGE_NAME}
-
-run:
-	docker \
-		run \
-		--detach \
-		--interactive \
-		--tty \
-		--publish=11300:11300 \
-		--hostname=${CONTAINER} \
-		--name=${CONTAINER} \
-		${IMAGE_NAME}
-
-shell:
-	docker \
-		run \
-		--rm \
-		--interactive \
-		--tty \
-		--hostname=${CONTAINER} \
-		--name=${CONTAINER} \
-		${IMAGE_NAME} \
-		/bin/sh
-
-exec:
-	docker \
-		exec \
-		--interactive \
-		--tty \
-		${CONTAINER}
-
-remove:
-	docker \
-		rm \
-		${CONTAINER}
-
-stop:
-	docker \
-		kill ${CONTAINER}
+	docker rmi \
+		--force \
+		$(NS)/$(REPO):$(VERSION)
 
 history:
-	docker \
-		history ${IMAGE_NAME}
+	docker history \
+		$(NS)/$(REPO):$(VERSION)
+
+push:
+	docker push \
+		$(NS)/$(REPO):$(VERSION)
+
+shell:
+	docker run \
+		--rm \
+		--name $(NAME)-$(INSTANCE) \
+		--interactive \
+		--tty \
+		$(PORTS) \
+		$(VOLUMES) \
+		$(ENV) \
+		$(NS)/$(REPO):$(VERSION) \
+		/bin/sh
+
+run:
+	docker run \
+		--rm \
+		--name $(NAME)-$(INSTANCE) \
+		$(PORTS) \
+		$(VOLUMES) \
+		$(ENV) \
+		$(NS)/$(REPO):$(VERSION)
+
+exec:
+	docker exec \
+		--interactive \
+		--tty \
+		$(NAME)-$(INSTANCE) \
+		/bin/sh
+
+start:
+	docker run \
+		--detach \
+		--name $(NAME)-$(INSTANCE) \
+		$(PORTS) \
+		$(VOLUMES) \
+		$(ENV) \
+		$(NS)/$(REPO):$(VERSION)
+
+stop:
+	docker stop \
+		$(NAME)-$(INSTANCE)
+
+rm:
+	docker rm \
+		$(NAME)-$(INSTANCE)
+
+release: build
+	make push -e VERSION=$(VERSION)
+
+default: build
+
 
