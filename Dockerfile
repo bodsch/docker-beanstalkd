@@ -7,7 +7,7 @@ ENV \
   ALPINE_MIRROR="mirror1.hs-esslingen.de/pub/Mirrors" \
   ALPINE_VERSION="v3.6" \
   TERM=xterm \
-  BUILD_DATE="2017-07-08" \
+  BUILD_DATE="2017-08-29" \
   BEANSTALKD_VERSION="1.10+21+gb7b4a6a+mod" \
   APK_ADD="build-base git" \
   APK_DEL="build-base git"
@@ -15,7 +15,7 @@ ENV \
 EXPOSE 11300
 
 LABEL \
-  version="1707-27.1" \
+  version="1708-35" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="beanstalkd Docker Image" \
   org.label-schema.description="Inofficial beanstalkd Docker Image" \

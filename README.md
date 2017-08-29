@@ -7,9 +7,9 @@ Beanstalk is a simple, fast work queue. [Project at GitHub](http://kr.github.io/
 
 # Status
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-beanstalkd.svg?branch=1705-01)][hub]
-[![Image Size](https://images.microbadger.com/badges/image/bodsch/docker-beanstalkd.svg?branch=1705-01)][microbadger]
-[![Build Status](https://travis-ci.org/bodsch/docker-beanstalkd.svg?branch=1705-01)][travis]
+[![Docker Pulls](https://img.shields.io/docker/pulls/bodsch/docker-beanstalkd.svg?branch)][hub]
+[![Image Size](https://images.microbadger.com/badges/image/bodsch/docker-beanstalkd.svg?branch)][microbadger]
+[![Build Status](https://travis-ci.org/bodsch/docker-beanstalkd.svg?branch)][travis]
 
 [hub]: https://hub.docker.com/r/bodsch/docker-beanstalkd/
 [microbadger]: https://microbadger.com/images/bodsch/docker-beanstalkd
