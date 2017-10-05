@@ -8,7 +8,7 @@ ENV \
   ALPINE_VERSION="v3.6" \
   TERM=xterm \
   BUILD_DATE="2017-10-05" \
-  BUILD_TYPE="git" \
+  BUILD_TYPE="stable" \
   BEANSTALKD_VERSION="1.10" \
   APK_ADD="build-base git" \
   APK_DEL="build-base git"
