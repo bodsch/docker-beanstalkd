@@ -7,15 +7,16 @@ ENV \
   ALPINE_MIRROR="mirror1.hs-esslingen.de/pub/Mirrors" \
   ALPINE_VERSION="v3.6" \
   TERM=xterm \
-  BUILD_DATE="2017-08-29" \
-  BEANSTALKD_VERSION="1.10+21+gb7b4a6a+mod" \
+  BUILD_DATE="2017-10-05" \
+  BUILD_TYPE="git" \
+  BEANSTALKD_VERSION="1.10" \
   APK_ADD="build-base git" \
   APK_DEL="build-base git"
 
 EXPOSE 11300
 
 LABEL \
-  version="1708-35" \
+  version="1710" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="beanstalkd Docker Image" \
   org.label-schema.description="Inofficial beanstalkd Docker Image" \
@@ -39,6 +40,13 @@ RUN \
   cd /opt && \
   git clone https://github.com/kr/beanstalkd.git && \
   cd beanstalkd && \
+  #
+  # build stable packages
+  if [ "${BUILD_TYPE}" == "stable" ] ; then \
+    echo "switch to stable Tag v${BEANSTALKD_VERSION}" && \
+    git checkout tags/v${BEANSTALKD_VERSION} 2> /dev/null ; \
+  fi && \
+  #
   sed -i 's,sys/fcntl.h,fcntl.h,' sd-daemon.c && \
   make && \
   mv beanstalkd /usr/bin/ && \
