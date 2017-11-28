@@ -4,14 +4,10 @@ FROM alpine:3.6
 MAINTAINER Bodo Schulz <bodo@boone-schulz.de>
 
 ENV \
-  ALPINE_MIRROR="mirror1.hs-esslingen.de/pub/Mirrors" \
-  ALPINE_VERSION="v3.6" \
   TERM=xterm \
-  BUILD_DATE="2017-10-05" \
+  BUILD_DATE="2017-11-28" \
   BUILD_TYPE="stable" \
-  BEANSTALKD_VERSION="1.10" \
-  APK_ADD="build-base git" \
-  APK_DEL="build-base git"
+  BEANSTALKD_VERSION="1.10"
 
 EXPOSE 11300
 
@@ -31,11 +27,10 @@ LABEL \
 # ---------------------------------------------------------------------------------------
 
 RUN \
-  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/main"       > /etc/apk/repositories && \
-  echo "http://${ALPINE_MIRROR}/alpine/${ALPINE_VERSION}/community" >> /etc/apk/repositories && \
-  apk --no-cache update && \
-  apk --no-cache upgrade && \
-  apk --no-cache add ${APK_ADD} && \
+  apk update --quiet --no-cache && \
+  apk upgrade --quiet --no-cache && \
+  apk add --quiet --no-cache --virtual .build-deps \
+    build-base git && \
   [ -d /opt ] || mkdir /opt &&\
   cd /opt && \
   git clone https://github.com/kr/beanstalkd.git && \
@@ -52,11 +47,18 @@ RUN \
   mv beanstalkd /usr/bin/ && \
   mkdir /var/cache/beanstalkd && \
   /usr/bin/beanstalkd -v && \
-  apk del --purge ${APK_ADD} && \
+  apk del --quiet .build-deps && \
   rm -rf \
     /opt/* \
     /tmp/* \
     /var/cache/apk/
+
+
+HEALTHCHECK \
+  --interval=5s \
+  --timeout=2s \
+  --retries=12 \
+  CMD ps ax | grep -c beanstalkd || exit 1
 
 CMD ["/usr/bin/beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0"]
 
