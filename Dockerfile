@@ -3,14 +3,15 @@ FROM alpine:3.7
 
 ENV \
   TERM=xterm \
-  BUILD_DATE="2017-12-22" \
+  BUILD_DATE="2018-01-18" \
   BUILD_TYPE="git" \
-  BEANSTALKD_VERSION="1.10"
+  BEANSTALKD_VERSION="1.10" \
+  TZ='Europe/Berlin'
 
 EXPOSE 11300
 
 LABEL \
-  version="1712" \
+  version="1801" \
   maintainer="Bodo Schulz <bodo@boone-schulz.de>" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="beanstalkd Docker Image" \
@@ -29,12 +30,13 @@ RUN \
   apk update --quiet --no-cache && \
   apk upgrade --quiet --no-cache && \
   apk add --quiet --no-cache --virtual .build-deps \
-    build-base git && \
+    build-base git tzdata && \
+  cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+  echo ${TZ} > /etc/timezone && \
   [ -d /opt ] || mkdir /opt &&\
   cd /opt && \
   git clone https://github.com/kr/beanstalkd.git && \
   cd beanstalkd && \
-  #build stable packages
   if [ "${BUILD_TYPE}" == "stable" ] ; then \
     echo "switch to stable Tag v${BEANSTALKD_VERSION}" && \
     git checkout tags/v${BEANSTALKD_VERSION} 2> /dev/null ; \
@@ -57,5 +59,3 @@ HEALTHCHECK \
   CMD ps ax | grep -v grep | grep -c beanstalkd || exit 1
 
 CMD ["/usr/bin/beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0"]
-
-# EOF

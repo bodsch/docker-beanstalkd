@@ -5,8 +5,16 @@ services:
 
 install:
   - docker build --tag bodsch/docker-beanstalkd .
-  - docker run --detach --name grafana bodsch/docker-beanstalkd
+  - docker run --detach --name beanstalkd bodsch/docker-beanstalkd
 
 script:
   - docker ps | grep -q beanstalkd
+
+after_success:
+  - |
+    [ "${TRAVIS_BRANCH}" == "master" ] && curl \
+      --request POST \
+      --header "Content-Type: application/json"  \
+      --data '{"source_type":"Branch","source_name":"master"}' \
+      https://registry.hub.docker.com/u/bodsch/docker-beanstalkd/trigger/${DOCKER_HUB_TOKEN}/
 
