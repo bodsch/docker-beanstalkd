@@ -1,17 +1,19 @@
 
-FROM alpine:3.7
+FROM alpine:latest
+
+ARG BUILD_DATE
+ARG BUILD_VERSION
+ARG BUILD_TYPE
+ARG BEANSTALKD_VERSION
+
 
 ENV \
-  TERM=xterm \
-  BUILD_DATE="2018-01-18" \
-  BUILD_TYPE="git" \
-  BEANSTALKD_VERSION="1.10" \
   TZ='Europe/Berlin'
 
 EXPOSE 11300
 
 LABEL \
-  version="1801" \
+  version=${BUILD_VERSION} \
   maintainer="Bodo Schulz <bodo@boone-schulz.de>" \
   org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.name="beanstalkd Docker Image" \
@@ -33,8 +35,7 @@ RUN \
     build-base git tzdata && \
   cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
   echo ${TZ} > /etc/timezone && \
-  [ -d /opt ] || mkdir /opt &&\
-  cd /opt && \
+  cd /tmp && \
   git clone https://github.com/kr/beanstalkd.git && \
   cd beanstalkd && \
   if [ "${BUILD_TYPE}" == "stable" ] ; then \
@@ -48,7 +49,6 @@ RUN \
   /usr/bin/beanstalkd -v && \
   apk del --quiet .build-deps && \
   rm -rf \
-    /opt/* \
     /tmp/* \
     /var/cache/apk/
 
