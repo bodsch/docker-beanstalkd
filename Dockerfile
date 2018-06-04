@@ -58,4 +58,10 @@ HEALTHCHECK \
   --retries=12 \
   CMD ps ax | grep -v grep | grep -c beanstalkd || exit 1
 
-CMD ["/usr/bin/beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0"]
+COPY rootfs/ /
+
+VOLUME [ "/var/cache/beanstalkd" ]
+
+ENTRYPOINT ["/init/run.sh"]
+
+CMD ["beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0", "-VV"]

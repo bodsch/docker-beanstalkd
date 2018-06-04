@@ -2,7 +2,8 @@ PORTS = \
   --publish=11300:11300
 
 VOLUMES = \
-  --volume /var/log/docker:/var/log
+  --volume /var/log/docker:/var/log \
+  --volume /tmp/data:/var/cache/beanstalkd
 
 # ENV = \
 #   --env
