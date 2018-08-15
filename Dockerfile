@@ -62,7 +62,8 @@ VOLUME [ "/var/cache/beanstalkd" ]
 
 ENTRYPOINT ["/init/run.sh"]
 
-CMD ["beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0", "-VV"]
+# CMD ["beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "60"]
+CMD ["beanstalkd", "-f", "3200"]
 
 # ---------------------------------------------------------------------------------------
 
