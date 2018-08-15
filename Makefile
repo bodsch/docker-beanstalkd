@@ -8,9 +8,9 @@ REPO     = docker-beanstalkd
 NAME     = beanstalkd
 INSTANCE = default
 
-BUILD_DATE := $(shell date +%Y-%m-%d)
+BUILD_DATE    := $(shell date +%Y-%m-%d)
 BUILD_VERSION := $(shell date +%y%m)
-BUILD_TYPE ?= 'stable'
+BUILD_TYPE    ?= 'stable'
 BEANSTALKD_VERSION ?= 1.10
 
 .PHONY: build push shell run start stop rm release
@@ -31,20 +31,20 @@ build:	params
 		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
 		--build-arg BUILD_TYPE=$(BUILD_TYPE) \
 		--build-arg BEANSTALKD_VERSION=${BEANSTALKD_VERSION} \
-		--tag $(NS)/$(REPO):$(VERSION) .
+		--tag $(NS)/$(REPO):${BEANSTALKD_VERSION} .
 
 clean:
 	docker rmi \
 		--force \
-		$(NS)/$(REPO):$(VERSION)
+		$(NS)/$(REPO):${BEANSTALKD_VERSION}
 
 history:
 	docker history \
-		$(NS)/$(REPO):$(VERSION)
+		$(NS)/$(REPO):${BEANSTALKD_VERSION}
 
 push:
 	docker push \
-		$(NS)/$(REPO):$(VERSION)
+		$(NS)/$(REPO):${BEANSTALKD_VERSION}
 
 shell:
 	docker run \
@@ -52,10 +52,11 @@ shell:
 		--name $(NAME)-$(INSTANCE) \
 		--interactive \
 		--tty \
+		--entrypoint "" \
 		$(PORTS) \
 		$(VOLUMES) \
 		$(ENV) \
-		$(NS)/$(REPO):$(VERSION) \
+		$(NS)/$(REPO):${BEANSTALKD_VERSION} \
 		/bin/sh
 
 run:
@@ -65,7 +66,7 @@ run:
 		$(PORTS) \
 		$(VOLUMES) \
 		$(ENV) \
-		$(NS)/$(REPO):$(VERSION)
+		$(NS)/$(REPO):${BEANSTALKD_VERSION}
 
 exec:
 	docker exec \
@@ -81,7 +82,7 @@ start:
 		$(PORTS) \
 		$(VOLUMES) \
 		$(ENV) \
-		$(NS)/$(REPO):$(VERSION)
+		$(NS)/$(REPO):${BEANSTALKD_VERSION}
 
 stop:
 	docker stop \
@@ -92,7 +93,7 @@ rm:
 		$(NAME)-$(INSTANCE)
 
 release: build
-	make push -e VERSION=$(VERSION)
+	make push -e VERSION=${BEANSTALKD_VERSION}
 
 default: build
 

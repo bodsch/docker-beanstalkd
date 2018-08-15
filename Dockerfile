@@ -6,7 +6,6 @@ ARG BUILD_VERSION
 ARG BUILD_TYPE
 ARG BEANSTALKD_VERSION
 
-
 ENV \
   TZ='Europe/Berlin'
 
@@ -58,4 +57,6 @@ HEALTHCHECK \
   --retries=12 \
   CMD ps ax | grep -v grep | grep -c beanstalkd || exit 1
 
-CMD ["/usr/bin/beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0"]
+ENTRYPOINT "/usr/bin/beanstalkd"
+
+CMD ["-V", "-b", "/var/cache/beanstalkd", "-f", "0"]
