@@ -1,5 +1,5 @@
 
-FROM alpine:latest
+FROM alpine:3.8
 
 ARG BUILD_DATE
 ARG BUILD_VERSION
@@ -10,20 +10,6 @@ ENV \
   TZ='Europe/Berlin'
 
 EXPOSE 11300
-
-LABEL \
-  version=${BUILD_VERSION} \
-  maintainer="Bodo Schulz <bodo@boone-schulz.de>" \
-  org.label-schema.build-date=${BUILD_DATE} \
-  org.label-schema.name="beanstalkd Docker Image" \
-  org.label-schema.description="Inofficial beanstalkd Docker Image" \
-  org.label-schema.url="http://kr.github.io/beanstalkd/" \
-  org.label-schema.vcs-url="https://github.com/bodsch/docker-beanstalkd" \
-  org.label-schema.vendor="Bodo Schulz" \
-  org.label-schema.version=${BEANSTALKD_VERSION} \
-  org.label-schema.schema-version="1.0" \
-  com.microscaling.docker.dockerfile="/Dockerfile" \
-  com.microscaling.license="GNU General Public License v3.0"
 
 # ---------------------------------------------------------------------------------------
 
@@ -57,6 +43,27 @@ HEALTHCHECK \
   --retries=12 \
   CMD ps ax | grep -v grep | grep -c beanstalkd || exit 1
 
-ENTRYPOINT "/usr/bin/beanstalkd"
+COPY rootfs/ /
+VOLUME [ "/var/cache/beanstalkd" ]
 
-CMD ["-V", "-b", "/var/cache/beanstalkd", "-f", "0"]
+ENTRYPOINT ["/init/run.sh"]
+
+CMD ["beanstalkd", "-b", "/var/cache/beanstalkd", "-f", "0", "-VV"]
+
+# ---------------------------------------------------------------------------------------
+
+LABEL \
+  version=${BUILD_VERSION} \
+  maintainer="Bodo Schulz <bodo@boone-schulz.de>" \
+  org.label-schema.build-date=${BUILD_DATE} \
+  org.label-schema.name="beanstalkd Docker Image" \
+  org.label-schema.description="Inofficial beanstalkd Docker Image" \
+  org.label-schema.url="http://kr.github.io/beanstalkd/" \
+  org.label-schema.vcs-url="https://github.com/bodsch/docker-beanstalkd" \
+  org.label-schema.vendor="Bodo Schulz" \
+  org.label-schema.version=${BEANSTALKD_VERSION} \
+  org.label-schema.schema-version="1.0" \
+  com.microscaling.docker.dockerfile="/Dockerfile" \
+  com.microscaling.license="Unlicense"
+
+# ---------------------------------------------------------------------------------------
