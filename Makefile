@@ -8,9 +8,9 @@ REPO     = docker-beanstalkd
 NAME     = beanstalkd
 INSTANCE = default
 
-BUILD_DATE    := $(shell date +%Y-%m-%d)
-BUILD_VERSION := $(shell date +%y%m)
-BUILD_TYPE    ?= 'stable'
+BUILD_DATE         := $(shell date +%Y-%m-%d)
+BUILD_VERSION      := $(shell date +%y%m)
+BUILD_TYPE         ?= 'stable'
 BEANSTALKD_VERSION ?= 1.10
 
 .PHONY: build push shell run start stop rm release

@@ -1,25 +1,20 @@
 
-FROM alpine:3.8
+FROM alpine:3.8 as builder
 
 ARG BUILD_DATE
 ARG BUILD_VERSION
 ARG BUILD_TYPE
 ARG BEANSTALKD_VERSION
 
-ENV \
-  TZ='Europe/Berlin'
-
-EXPOSE 11300
-
 # ---------------------------------------------------------------------------------------
 
 RUN \
   apk update --quiet --no-cache && \
   apk upgrade --quiet --no-cache && \
-  apk add --quiet --no-cache --virtual .build-deps \
-    build-base git tzdata && \
-  cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
-  echo ${TZ} > /etc/timezone && \
+  apk add --quiet --no-cache \
+    build-base git
+
+RUN \
   cd /tmp && \
   git clone https://github.com/kr/beanstalkd.git && \
   cd beanstalkd && \
@@ -30,12 +25,31 @@ RUN \
   sed -i 's,sys/fcntl.h,fcntl.h,' sd-daemon.c && \
   make && \
   mv beanstalkd /usr/bin/ && \
+  /usr/bin/beanstalkd -v
+
+# ---------------------------------------------------------------------------------------
+
+FROM alpine:3.8
+
+ENV \
+  TZ='Europe/Berlin'
+
+EXPOSE 11300
+
+RUN \
+  apk update --quiet --no-cache && \
+  apk upgrade --quiet --no-cache && \
+  apk add --quiet --no-cache --virtual .build-deps \
+    tzdata && \
+  cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+  echo ${TZ} > /etc/timezone && \
   mkdir /var/cache/beanstalkd && \
-  /usr/bin/beanstalkd -v && \
   apk del --quiet .build-deps && \
   rm -rf \
     /tmp/* \
     /var/cache/apk/
+
+COPY --from=builder /usr/bin/beanstalkd /usr/bin/
 
 HEALTHCHECK \
   --interval=5s \
