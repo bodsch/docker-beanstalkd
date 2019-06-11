@@ -1,18 +1,44 @@
 sudo: required
 services:
 - docker
-install:
-- docker build --tag bodsch/docker-beanstalkd .
-- docker run --detach --name beanstalkd bodsch/docker-beanstalkd
-script:
-- docker ps | grep -q beanstalkd
-after_success:
-- |
-  [ "${TRAVIS_BRANCH}" == "master" ] && curl \
-    --request POST \
-    --header "Content-Type: application/json"  \
-    --data '{"source_type":"Branch","source_name":"master"}' \
-    https://registry.hub.docker.com/u/bodsch/docker-beanstalkd/trigger/${DOCKER_HUB_TOKEN}/
+
 env:
   global:
-    secure: zpRvSWit0L73nXXgZaVmD+0a0tXaD4XxxYrFt2BF0G5ZWA7bThNBpbHBkxGUnKCBL7I9QdrHs1nTx2h/ZGugHqev3lutwOOqVHy5NFeAPnBIcEMMcOd3nlnfo0Rp7yi8vjC4N5O+Rsd+/HG9ul6PmIFrFH0XcItT7Fv50E9TbcUeo6XUy4bPxfmZli1TRO5TdC4IwVS1jWUOVPhJH6GmtyUIN+War/9v0+xCW01RW7j5K80HmkreDgLvkKOZaIUUtQtoeIMCzObPktIXAIKGeiiDP9gIfgqHvIrdRLxDFZe/WTw/9ZZ6WMJs9xpUwjZe0L0BPJpUG7q2wHTDBq19d7HATuF7UybMB9jGoh50Bbp9WmV/IAbfEYxXn+g1U2YWkFObg6uI+8WvFzX/zvgNyH04Zxciyoqm3faBWdcm+FOOLkm+dLTrkOqvPk3aT/eHxtEiREP5SLtaVamvBbZg++pi9sHvauvwP+b2tSHJTshxKUzvc4FVF0+8jz5lEVhIAQ1AzqvAw9CJYmzKyuCJa1rNgI5PmGekbz+gVWRgcPt8LfSjz0nbeGpJdbjW41RAoETxqetImIbwRpQM5WLhL6RS7A92Y4U5A+BaviTUhqZG+8jMXX64wqW1H4YQaqNs+UlOktTR2/QGimDh5rU2xRoohqQ9dS6I98S4jblQrwE=
+  - BEANSTALKD_VERSION=${BEANSTALKD_VERSION:-1.10}
+  - BUILD_DATE=$(date +"%Y-%m-%d")
+  - BUILD_TYPE=stable
+  - secure: zpRvSWit0L73nXXgZaVmD+0a0tXaD4XxxYrFt2BF0G5ZWA7bThNBpbHBkxGUnKCBL7I9QdrHs1nTx2h/ZGugHqev3lutwOOqVHy5NFeAPnBIcEMMcOd3nlnfo0Rp7yi8vjC4N5O+Rsd+/HG9ul6PmIFrFH0XcItT7Fv50E9TbcUeo6XUy4bPxfmZli1TRO5TdC4IwVS1jWUOVPhJH6GmtyUIN+War/9v0+xCW01RW7j5K80HmkreDgLvkKOZaIUUtQtoeIMCzObPktIXAIKGeiiDP9gIfgqHvIrdRLxDFZe/WTw/9ZZ6WMJs9xpUwjZe0L0BPJpUG7q2wHTDBq19d7HATuF7UybMB9jGoh50Bbp9WmV/IAbfEYxXn+g1U2YWkFObg6uI+8WvFzX/zvgNyH04Zxciyoqm3faBWdcm+FOOLkm+dLTrkOqvPk3aT/eHxtEiREP5SLtaVamvBbZg++pi9sHvauvwP+b2tSHJTshxKUzvc4FVF0+8jz5lEVhIAQ1AzqvAw9CJYmzKyuCJa1rNgI5PmGekbz+gVWRgcPt8LfSjz0nbeGpJdbjW41RAoETxqetImIbwRpQM5WLhL6RS7A92Y4U5A+BaviTUhqZG+8jMXX64wqW1H4YQaqNs+UlOktTR2/QGimDh5rU2xRoohqQ9dS6I98S4jblQrwE=
+
+jobs:
+  include:
+  - stage: build
+    script:
+    - make
+
+  - stage: build and test
+    script:
+    - make compose-file
+    - docker-compose build
+    - docker-compose up -d
+    - sleep 30s
+    - make test
+    - docker-compose kill
+    - docker-compose down
+
+  - stage: push latest docker image
+    if: branch = master
+    script:
+    - make
+    - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+    - docker tag ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:latest
+    - docker push ${DOCKER_USERNAME}/docker-beanstalkd:latest
+    - docker logout
+
+  - stage: push version docker image
+    if: branch = master
+    script:
+    - make
+    - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+    - docker tag ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:${ICINGAWEB_VERSION}
+    - docker push ${DOCKER_USERNAME}/docker-beanstalkd:${ICINGAWEB_VERSION}
+    - docker logout

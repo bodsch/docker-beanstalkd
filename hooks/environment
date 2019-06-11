@@ -1,0 +1,11 @@
+
+DATA_DIR="${PWD}/data"
+
+PORTS="
+  --publish=11300:11300/tcp"
+
+VOLUMES=""
+#  --volume /tmp/data:/var/cache/beanstalkd
+
+ENV=""
+#  --env REDIS_HOST=redis"

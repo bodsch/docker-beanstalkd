@@ -1,5 +1,5 @@
 
-FROM alpine:3.8 as builder
+FROM alpine:3.9 as builder
 
 ARG BUILD_DATE
 ARG BUILD_VERSION
@@ -8,19 +8,24 @@ ARG BEANSTALKD_VERSION
 
 # ---------------------------------------------------------------------------------------
 
+WORKDIR /tmp
+# hadolint ignore=DL3017,DL3018,DL3019
 RUN \
-  apk update --quiet --no-cache && \
-  apk upgrade --quiet --no-cache && \
-  apk add --quiet --no-cache \
-    build-base git
+  apk update  --quiet && \
+  apk upgrade --quiet && \
+  apk add     --quiet \
+    build-base \
+    git
 
 RUN \
-  cd /tmp && \
-  git clone https://github.com/kr/beanstalkd.git && \
-  cd beanstalkd && \
-  if [ "${BUILD_TYPE}" == "stable" ] ; then \
+  git clone https://github.com/kr/beanstalkd.git
+
+WORKDIR /tmp/beanstalkd
+
+RUN \
+  if [ "${BUILD_TYPE}" = "stable" ] ; then \
     echo "switch to stable Tag v${BEANSTALKD_VERSION}" && \
-    git checkout tags/v${BEANSTALKD_VERSION} 2> /dev/null ; \
+    git checkout "tags/v${BEANSTALKD_VERSION}" 2> /dev/null ; \
   fi && \
   sed -i 's,sys/fcntl.h,fcntl.h,' sd-daemon.c && \
   make && \
@@ -29,20 +34,20 @@ RUN \
 
 # ---------------------------------------------------------------------------------------
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 ENV \
   TZ='Europe/Berlin'
 
 EXPOSE 11300
-
+# hadolint ignore=DL3017,DL3018,DL3019
 RUN \
-  apk update --quiet --no-cache && \
+  apk update  --quiet --no-cache && \
   apk upgrade --quiet --no-cache && \
-  apk add --quiet --no-cache --virtual .build-deps \
+  apk add     --quiet --no-cache --virtual .build-deps \
     tzdata && \
-  cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
-  echo ${TZ} > /etc/timezone && \
+  cp "/usr/share/zoneinfo/${TZ}" /etc/localtime && \
+  echo "${TZ}" > /etc/timezone && \
   mkdir /var/cache/beanstalkd && \
   apk del --quiet .build-deps && \
   rm -rf \
@@ -75,10 +80,11 @@ LABEL \
   org.label-schema.description="Inofficial beanstalkd Docker Image" \
   org.label-schema.url="http://kr.github.io/beanstalkd/" \
   org.label-schema.vcs-url="https://github.com/bodsch/docker-beanstalkd" \
+  org.label-schema.vcs-ref=${VCS_REF} \
   org.label-schema.vendor="Bodo Schulz" \
   org.label-schema.version=${BEANSTALKD_VERSION} \
   org.label-schema.schema-version="1.0" \
   com.microscaling.docker.dockerfile="/Dockerfile" \
-  com.microscaling.license="Unlicense"
+  com.microscaling.license="The Unlicense"
 
 # ---------------------------------------------------------------------------------------

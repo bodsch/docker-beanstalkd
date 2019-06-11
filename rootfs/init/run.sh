@@ -5,15 +5,17 @@ set -u
 
 . /init/output.sh
 
+set -x
 
-if [[ "${1:0:1}" = '-' ]]
+# set the beanstalkd binary, when it missing
+if [ "${1:0:1}" = '-' ]
 then
-  set -- beanstalkd "$@"
+  set -- beanstalkd "${@}"
 fi
 
-if [[ "$1" = "beanstalkd" ]]
+if [ "${1}" = "beanstalkd" ]
 then
-  /init/configure.sh "${@:2}"
+  /init/configure.sh "${@}"
 fi
 
 log_info "start beanstalkd ..."

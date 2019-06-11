@@ -1,0 +1,21 @@
+---
+version: '3.3'
+
+services:
+
+  beanstalkd:
+    restart: always
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        - VCS_REF=${GIT_SHA1}
+        - BUILD_DATE=${BUILD_DATE}
+        - BUILD_VERSION=${BUILD_VERSION}
+        - BUILD_TYPE=${BUILD_TYPE}
+        - BEANSTALKD_VERSION=${BEANSTALKD_VERSION}
+    # command: '-b /var/cache/beanstalkd -f 3200'
+    container_name: beanstalkd
+    hostname: beanstalkd
+    ports:
+      - 11300:11300
