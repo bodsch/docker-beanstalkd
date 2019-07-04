@@ -5,8 +5,6 @@ set -u
 
 . /init/output.sh
 
-set -x
-
 # set the beanstalkd binary, when it missing
 if [ "${1:0:1}" = '-' ]
 then

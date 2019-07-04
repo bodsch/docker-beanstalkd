@@ -30,7 +30,7 @@ jobs:
     script:
     - make
     - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-    - docker tag ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:latest
+    - docker tag  ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:latest
     - docker push ${DOCKER_USERNAME}/docker-beanstalkd:latest
     - docker logout
 
@@ -39,6 +39,6 @@ jobs:
     script:
     - make
     - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-    - docker tag ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:${ICINGAWEB_VERSION}
-    - docker push ${DOCKER_USERNAME}/docker-beanstalkd:${ICINGAWEB_VERSION}
+    - docker tag  ${USER}/beanstalkd:latest ${DOCKER_USERNAME}/docker-beanstalkd:${BEANSTALKD_VERSION}
+    - docker push ${DOCKER_USERNAME}/docker-beanstalkd:${BEANSTALKD_VERSION}
     - docker logout
